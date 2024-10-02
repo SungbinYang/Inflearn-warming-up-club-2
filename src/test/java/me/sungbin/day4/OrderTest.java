@@ -1,6 +1,5 @@
 package me.sungbin.day4;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -10,14 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class OrderServiceTest {
-
-    private OrderService orderService;
-
-    @BeforeEach
-    void setUp() {
-        orderService = new OrderService();
-    }
+class OrderTest {
 
     @Test
     @DisplayName("주문 유효성 테스트 - 실패(주문 항목이 null)")
@@ -26,7 +18,7 @@ class OrderServiceTest {
         Order nullItemOrder = new Order(null, "양성빈");
 
         // when
-        boolean result = orderService.validateOrder(nullItemOrder);
+        boolean result = nullItemOrder.validateOrder();
 
         // then
         assertFalse(result);
@@ -39,7 +31,7 @@ class OrderServiceTest {
         Order noItemOrder = new Order(Collections.emptyList(), "양성빈");
 
         // when
-        boolean result = orderService.validateOrder(noItemOrder);
+        boolean result = noItemOrder.validateOrder();
 
         // then
         assertFalse(result);
@@ -52,7 +44,7 @@ class OrderServiceTest {
         Order invalidPriceOrder = new Order(List.of(new Item("item1", -100)), "양성빈");
 
         // when
-        boolean result = orderService.validateOrder(invalidPriceOrder);
+        boolean result = invalidPriceOrder.validateOrder();
 
         // then
         assertFalse(result);
@@ -65,7 +57,7 @@ class OrderServiceTest {
         Order noCustomerInfoOrder = new Order(List.of(new Item("item1", 100)), "");
 
         // when
-        boolean result = orderService.validateOrder(noCustomerInfoOrder);
+        boolean result = noCustomerInfoOrder.validateOrder();
 
         // then
         assertFalse(result);
@@ -78,7 +70,7 @@ class OrderServiceTest {
         Order noCustomerInfoOrder = new Order(List.of(new Item("item1", 100)), null);
 
         // when
-        boolean result = orderService.validateOrder(noCustomerInfoOrder);
+        boolean result = noCustomerInfoOrder.validateOrder();
 
         // then
         assertFalse(result);
@@ -91,10 +83,9 @@ class OrderServiceTest {
         Order validOrder = new Order(Arrays.asList(new Item("item1", 100), new Item("item2", 200)), "양성빈");
 
         // when
-        boolean result = orderService.validateOrder(validOrder);
+        boolean result = validOrder.validateOrder();
 
         // then
         assertTrue(result);
     }
-
 }
