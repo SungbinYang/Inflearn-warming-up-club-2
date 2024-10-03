@@ -17,29 +17,40 @@ public class Order {
     }
 
     public boolean validateOrder() {
-        boolean isValid = true;
-
         try {
-            if (hasNotItems()) {
-                throw new OrderException("주문 항목이 없습니다.");
-            }
-
-            if (isInvalidPrice()) {
-                throw new OrderException("올바르지 않은 총 가격입니다.");
-            }
-
-            if (hasNotCustomerInfo()) {
-                throw new OrderException("사용자 정보가 없습니다.");
-            }
+            checkOrderConditions();
+            return true;
         } catch (OrderException e) {
             log.info(e.getMessage());
-            isValid = false;
         } catch (Exception e) {
             log.info("프로그램에 문제가 생겼습니다.");
-            isValid = false;
         }
 
-        return isValid;
+        return false;
+    }
+
+    private void checkOrderConditions() throws OrderException {
+        validateItems();
+        validatePrice();
+        validateCustomerInfo();
+    }
+
+    private void validateItems() throws OrderException {
+        if (hasNotItems()) {
+            throw new OrderException("주문 항목이 없습니다.");
+        }
+    }
+
+    private void validatePrice() throws OrderException {
+        if (isInvalidPrice()) {
+            throw new OrderException("올바르지 않은 총 가격입니다.");
+        }
+    }
+
+    private void validateCustomerInfo() throws OrderException {
+        if (hasNotCustomerInfo()) {
+            throw new OrderException("사용자 정보가 없습니다.");
+        }
     }
 
     private int calculateTotalPrice() {
