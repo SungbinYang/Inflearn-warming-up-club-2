@@ -1,12 +1,12 @@
 package me.sungbin.day7;
 
-import cleancode.studycafe.asis.exception.AppException;
-import cleancode.studycafe.asis.io.InputHandler;
-import cleancode.studycafe.asis.io.OutputHandler;
-import cleancode.studycafe.asis.io.StudyCafeFileHandler;
-import cleancode.studycafe.asis.model.StudyCafeLockerPass;
-import cleancode.studycafe.asis.model.StudyCafePass;
-import cleancode.studycafe.asis.model.StudyCafePassType;
+import me.sungbin.day7.exception.AppException;
+import me.sungbin.day7.io.InputHandler;
+import me.sungbin.day7.io.OutputHandler;
+import me.sungbin.day7.io.StudyCafeFileHandler;
+import me.sungbin.day7.model.StudyCafeLockerPass;
+import me.sungbin.day7.model.StudyCafePass;
+import me.sungbin.day7.model.StudyCafePassType;
 
 import java.util.List;
 

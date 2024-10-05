@@ -1,7 +1,7 @@
 package me.sungbin.day7.io;
 
-import cleancode.studycafe.asis.model.StudyCafeLockerPass;
-import cleancode.studycafe.asis.model.StudyCafePass;
+import me.sungbin.day7.model.StudyCafeLockerPass;
+import me.sungbin.day7.model.StudyCafePass;
 
 import java.util.List;
 
