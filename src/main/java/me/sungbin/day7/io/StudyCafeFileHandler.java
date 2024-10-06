@@ -39,12 +39,15 @@ public class StudyCafeFileHandler {
 
             for (String line : lines) {
                 String[] values = line.split(",");
-                int duration = Integer.parseInt(values[0]);  // 기간
-                int price = Integer.parseInt(values[1]);     // 가격
+                StudyCafePassType filePassType = StudyCafePassType.valueOf(values[0]);
+                int duration = Integer.parseInt(values[1]);  // 기간
+                int price = Integer.parseInt(values[2]);     // 가격
 
-                // 현재 라커 정책에 맞는 라커 패스 생성
-                StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(passType, duration, price);
-                lockerPasses.add(lockerPass);
+                if (passType == filePassType) {
+                    StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(passType, duration, price);
+                    lockerPasses.add(lockerPass);
+                }
+
             }
 
             return StudyCafeLockerPasses.of(lockerPasses);
