@@ -2,7 +2,9 @@ package me.sungbin.day7;
 
 import me.sungbin.day7.config.StudyCafeConfigProvider;
 import me.sungbin.day7.exception.AppException;
-import me.sungbin.day7.io.ConsoleOutputHandler;
+import me.sungbin.day7.io.InputHandler;
+import me.sungbin.day7.io.OutputHandler;
+import me.sungbin.day7.io.StudyCafeSeatReadProvider;
 import me.sungbin.day7.model.Initializable;
 import me.sungbin.day7.model.RunnableMachine;
 import me.sungbin.day7.model.order.Order;
@@ -13,12 +15,27 @@ import me.sungbin.day7.model.pass.locker.StudyCafeLockerRentalPass;
 import me.sungbin.day7.model.pass.locker.policy.LockerPolicyType;
 
 import java.util.List;
+import java.util.Map;
 
 public class StudyCafePassMachine implements Initializable, RunnableMachine {
 
+    private final OutputHandler outputHandler;
+    private final InputHandler inputHandler;
+    private final StudyCafeSeatReadProvider studyCafeSeatReadProvider;
+    private final Map<StudyCafePassType, LockerPolicyType> lockerPolicyMap;
+    private final Map<StudyCafePassType, StudyCafePassType> strategyMap;
+
+    // 생성자에서 필요한 객체들을 한 번만 가져옴
+    public StudyCafePassMachine() {
+        this.outputHandler = StudyCafeConfigProvider.getOutputHandler();
+        this.inputHandler = StudyCafeConfigProvider.getInputHandler();
+        this.studyCafeSeatReadProvider = StudyCafeConfigProvider.getStudyCafeSeatReadProvider();
+        this.lockerPolicyMap = StudyCafeConfigProvider.getLockerPolicyMap();
+        this.strategyMap = StudyCafeConfigProvider.getStrategyMap();
+    }
+
     @Override
     public void initialize() {
-        ConsoleOutputHandler outputHandler = StudyCafeConfigProvider.getConfig().getOutputHandler();
         outputHandler.showWelcomeMessage();
         outputHandler.showAnnouncement();
     }
@@ -31,45 +48,31 @@ public class StudyCafePassMachine implements Initializable, RunnableMachine {
             Order order = createOrder(selectedPassType, selectedPass);
             processOrderWithStrategy(selectedPassType, order);
         } catch (AppException e) {
-            handleAppException(e);
+            outputHandler.showSimpleMessage(e.getMessage());
         } catch (Exception e) {
-            handleGeneralException(e);
+            outputHandler.showSimpleMessage("알 수 없는 오류가 발생했습니다.");
         }
     }
 
-    // 선택된 패스 타입 처리
     private StudyCafePassType getSelectedPassType() {
-        StudyCafeConfigProvider.getConfig().getOutputHandler().askPassTypeSelection();
-        return StudyCafeConfigProvider.getConfig().getInputHandler().getPassTypeSelectingUserAction();
+        outputHandler.askPassTypeSelection();
+        return inputHandler.getPassTypeSelectingUserAction();
     }
 
-    // 패스 선택
     private StudyCafeSeatPass selectPassForType(StudyCafePassType passType) {
-        StudyCafeSeatPasses availablePasses = StudyCafeConfigProvider.getConfig().getFileHandler().readStudyCafePasses();
+        StudyCafeSeatPasses availablePasses = studyCafeSeatReadProvider.getStudyCafePasses();
         List<StudyCafeSeatPass> filteredPasses = availablePasses.findBy(passType);
-        StudyCafeConfigProvider.getConfig().getOutputHandler().showPassListForSelection(filteredPasses);
-        return StudyCafeConfigProvider.getConfig().getInputHandler().getSelectPass(filteredPasses);
+        outputHandler.showPassListForSelection(filteredPasses);
+        return inputHandler.getSelectPass(filteredPasses);
     }
 
-    // 사물함 정책에 따라 Order 생성
     private Order createOrder(StudyCafePassType passType, StudyCafeSeatPass selectedPass) {
-        LockerPolicyType lockerPolicy = StudyCafeConfigProvider.getConfig().getLockerPolicyMap().get(passType);
+        LockerPolicyType lockerPolicy = lockerPolicyMap.get(passType);
         StudyCafeLockerRentalPass lockerPass = lockerPolicy.handleLockerUsage(selectedPass).orElse(null);
-        return Order.createOrder(selectedPass, lockerPass);
+        return Order.of(selectedPass, lockerPass);
     }
 
-    // 전략 처리
     private void processOrderWithStrategy(StudyCafePassType passType, Order order) {
-        StudyCafeConfigProvider.getConfig().getStrategyMap().get(passType).handlePass(order);
-    }
-
-    // 예외 처리
-    private void handleAppException(AppException e) {
-        StudyCafeConfigProvider.getConfig().getOutputHandler().showSimpleMessage(e.getMessage());
-    }
-
-    private void handleGeneralException(Exception e) {
-        StudyCafeConfigProvider.getConfig().getOutputHandler().showSimpleMessage("알 수 없는 오류가 발생했습니다.");
-        System.out.println(e.getMessage());
+        strategyMap.get(passType).handlePass(order);
     }
 }

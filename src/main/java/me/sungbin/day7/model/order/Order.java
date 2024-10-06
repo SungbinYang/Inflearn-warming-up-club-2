@@ -7,13 +7,12 @@ public class Order {
     private final StudyCafeSeatPass pass;
     private final StudyCafeLockerRentalPass lockerPass;
 
-    // private 생성자, 내부에서 모든 계산 처리
     private Order(StudyCafeSeatPass pass, StudyCafeLockerRentalPass lockerPass) {
         this.pass = pass;
         this.lockerPass = lockerPass;
     }
 
-    public static Order createOrder(StudyCafeSeatPass pass, StudyCafeLockerRentalPass lockerPass) {
+    public static Order of(StudyCafeSeatPass pass, StudyCafeLockerRentalPass lockerPass) {
         return new Order(pass, lockerPass);
     }
 

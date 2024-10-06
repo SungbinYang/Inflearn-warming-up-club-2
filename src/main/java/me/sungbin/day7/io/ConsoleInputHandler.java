@@ -1,8 +1,8 @@
 package me.sungbin.day7.io;
 
 import me.sungbin.day7.exception.AppException;
-import me.sungbin.day7.model.pass.StudyCafeSeatPass;
 import me.sungbin.day7.model.pass.StudyCafePassType;
+import me.sungbin.day7.model.pass.StudyCafeSeatPass;
 
 import java.util.List;
 import java.util.Scanner;
@@ -32,10 +32,18 @@ public class ConsoleInputHandler implements InputHandler {
 
     @Override
     public StudyCafeSeatPass getSelectPass(List<StudyCafeSeatPass> passes) {
-        String userInput = SCANNER.nextLine();
-        int selectedIndex = Integer.parseInt(userInput) - 1;
+        try {
+            String userInput = SCANNER.nextLine();
+            int selectedIndex = Integer.parseInt(userInput) - 1;
 
-        return passes.get(selectedIndex);
+            if (selectedIndex < 0 || selectedIndex >= passes.size()) {
+                throw new AppException("잘못된 선택입니다.");
+            }
+
+            return passes.get(selectedIndex);
+        } catch (NumberFormatException e) {
+            throw new AppException("잘못된 형식의 입력입니다. 숫자를 입력해 주세요.");
+        }
     }
 
     @Override

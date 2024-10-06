@@ -1,7 +1,7 @@
 package me.sungbin.day7.model.pass.locker.policy;
 
 import me.sungbin.day7.config.StudyCafeConfigProvider;
-import me.sungbin.day7.io.StudyCafeFileHandler;
+import me.sungbin.day7.io.StudyCafeLockerReadProvider;
 import me.sungbin.day7.model.pass.StudyCafeSeatPass;
 import me.sungbin.day7.model.pass.locker.StudyCafeLockerRentalPass;
 import me.sungbin.day7.model.pass.locker.StudyCafeLockerRentalPasses;
@@ -18,9 +18,9 @@ public enum LockerPolicyType {
 
         @Override
         public Optional<StudyCafeLockerRentalPass> handleLockerUsage(StudyCafeSeatPass selectedPass) {
-            StudyCafeFileHandler fileHandler = StudyCafeConfigProvider.getConfig().getFileHandler();
+            StudyCafeLockerReadProvider studyCafeLockerReadProvider = StudyCafeConfigProvider.getStudyCafeLockerReadProvider();
 
-            StudyCafeLockerRentalPasses availableLockerPasses = fileHandler.readLockerPasses(selectedPass.getPassType());
+            StudyCafeLockerRentalPasses availableLockerPasses = studyCafeLockerReadProvider.getLockerPasses(selectedPass.getPassType());
 
             return availableLockerPasses.findBy(selectedPass);
         }
@@ -38,6 +38,7 @@ public enum LockerPolicyType {
     };
 
     public abstract boolean canUseLocker();
+
     public abstract Optional<StudyCafeLockerRentalPass> handleLockerUsage(StudyCafeSeatPass selectedPass);
 }
 

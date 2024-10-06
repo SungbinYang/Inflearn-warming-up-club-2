@@ -1,7 +1,7 @@
 package me.sungbin.day7.model.pass;
 
 import me.sungbin.day7.config.StudyCafeConfigProvider;
-import me.sungbin.day7.io.ConsoleOutputHandler;
+import me.sungbin.day7.io.OutputHandler;
 import me.sungbin.day7.model.order.Order;
 
 import java.util.function.Consumer;
@@ -25,7 +25,7 @@ public enum StudyCafePassType {
     }
 
     private static void handleCommonPassFor(Order order) {
-        ConsoleOutputHandler outputHandler = StudyCafeConfigProvider.getConfig().getOutputHandler();
+        OutputHandler outputHandler = StudyCafeConfigProvider.getOutputHandler();
 
         outputHandler.showPassOrderSummary(order);
     }
