@@ -7,6 +7,7 @@ import me.sungbin.day7.io.OutputHandler;
 import me.sungbin.day7.model.LockerPolicyType;
 import me.sungbin.day7.model.StudyCafePass;
 import me.sungbin.day7.model.StudyCafePassType;
+import me.sungbin.day7.model.StudyCafePasses;
 
 import java.util.List;
 import java.util.Map;
@@ -45,10 +46,8 @@ public class StudyCafePassMachine {
     }
 
     private StudyCafePass handlePassSelection(StudyCafePassType passType) {
-        List<StudyCafePass> availablePasses = config.getFileHandler().readStudyCafePasses();
-        List<StudyCafePass> filteredPasses = availablePasses.stream()
-                .filter(pass -> pass.isSameType(passType))
-                .toList();
+        StudyCafePasses availablePasses = config.getFileHandler().readStudyCafePasses();
+        List<StudyCafePass> filteredPasses = availablePasses.findBy(passType);
 
         config.getOutputHandler().showPassListForSelection(filteredPasses);
         return config.getInputHandler().getSelectPass(filteredPasses);
