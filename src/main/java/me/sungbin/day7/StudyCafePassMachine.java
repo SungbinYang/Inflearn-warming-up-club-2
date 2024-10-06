@@ -50,7 +50,7 @@ public class StudyCafePassMachine {
     private StudyCafePass handlePassSelection(StudyCafePassType passType) {
         List<StudyCafePass> availablePasses = fileHandler.readStudyCafePasses();
         List<StudyCafePass> filteredPasses = availablePasses.stream()
-                .filter(pass -> pass.getPassType() == passType)
+                .filter(pass -> pass.isSameType(passType))
                 .toList();
 
         outputHandler.showPassListForSelection(filteredPasses);

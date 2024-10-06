@@ -3,7 +3,6 @@ package me.sungbin.day7.model;
 import me.sungbin.day7.config.StudyCafeConfigProvider;
 import me.sungbin.day7.io.InputHandler;
 import me.sungbin.day7.io.OutputHandler;
-import me.sungbin.day7.io.StudyCafeFileHandler;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,8 +26,7 @@ public class FixedPassStrategy implements StudyCafePassStrategy {
         OutputHandler outputHandler = StudyCafeConfigProvider.getConfig().getOutputHandler();
 
         return availableLockerPasses.stream()
-                .filter(lockerPass -> lockerPass.getPassType() == selectedPass.getPassType() &&
-                        lockerPass.getDuration() == selectedPass.getDuration())
+                .filter(selectedPass::isSameLocker)
                 .findFirst()
                 .flatMap(lockerPass -> {
                     outputHandler.askLockerPass(lockerPass);
