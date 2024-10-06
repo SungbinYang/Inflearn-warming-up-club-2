@@ -27,6 +27,10 @@ public class StudyCafePass {
                 && lockerPass.isSameDuration(this.duration);
     }
 
+    public StudyCafePassType getPassType() {
+        return passType;
+    }
+
     public int getPrice() {
         return price;
     }

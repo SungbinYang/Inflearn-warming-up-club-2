@@ -34,23 +34,25 @@ public class StudyCafeFileHandler {
         }
     }
 
-    public List<StudyCafeLockerPass> readLockerPasses() {
+    public List<StudyCafeLockerPass> readLockerPasses(StudyCafePassType passType) {
         try {
             List<String> lines = Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/locker.csv"));
             List<StudyCafeLockerPass> lockerPasses = new ArrayList<>();
 
             for (String line : lines) {
                 String[] values = line.split(",");
-                StudyCafePassType studyCafePassType = StudyCafePassType.valueOf(values[0]);
-                int duration = Integer.parseInt(values[1]);
-                int price = Integer.parseInt(values[2]);
+                int duration = Integer.parseInt(values[0]);  // 기간
+                int price = Integer.parseInt(values[1]);     // 가격
 
-                StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(studyCafePassType, duration, price);
+                // 현재 라커 정책에 맞는 라커 패스 생성
+                StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(passType, duration, price);
                 lockerPasses.add(lockerPass);
             }
 
             return lockerPasses;
+
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException("파일을 읽는데 실패했습니다.", e);
         }
     }
