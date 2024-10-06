@@ -1,8 +1,8 @@
 package me.sungbin.day7.io;
 
 import me.sungbin.day7.exception.AppException;
-import me.sungbin.day7.model.StudyCafePass;
-import me.sungbin.day7.model.StudyCafePassType;
+import me.sungbin.day7.model.pass.StudyCafeSeatPass;
+import me.sungbin.day7.model.pass.StudyCafePassType;
 
 import java.util.List;
 import java.util.Scanner;
@@ -29,7 +29,7 @@ public class InputHandler {
         throw new AppException("잘못된 입력입니다.");
     }
 
-    public StudyCafePass getSelectPass(List<StudyCafePass> passes) {
+    public StudyCafeSeatPass getSelectPass(List<StudyCafeSeatPass> passes) {
         String userInput = SCANNER.nextLine();
         int selectedIndex = Integer.parseInt(userInput) - 1;
 

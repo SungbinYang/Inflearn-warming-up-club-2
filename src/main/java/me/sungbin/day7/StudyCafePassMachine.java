@@ -4,10 +4,10 @@ import me.sungbin.day7.config.StudyCafeConfig;
 import me.sungbin.day7.config.StudyCafeConfigProvider;
 import me.sungbin.day7.exception.AppException;
 import me.sungbin.day7.io.OutputHandler;
-import me.sungbin.day7.model.LockerPolicyType;
-import me.sungbin.day7.model.StudyCafePass;
-import me.sungbin.day7.model.StudyCafePassType;
-import me.sungbin.day7.model.StudyCafePasses;
+import me.sungbin.day7.model.pass.locker.policy.LockerPolicyType;
+import me.sungbin.day7.model.pass.StudyCafeSeatPass;
+import me.sungbin.day7.model.pass.StudyCafePassType;
+import me.sungbin.day7.model.pass.StudyCafeSeatPasses;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class StudyCafePassMachine {
             outputHandler.showAnnouncement();
 
             StudyCafePassType selectedPassType = getSelectedPassType();
-            StudyCafePass selectedPass = handlePassSelection(selectedPassType);
+            StudyCafeSeatPass selectedPass = handlePassSelection(selectedPassType);
 
             LockerPolicyType lockerPolicy = lockerPolicyMap.get(selectedPassType);
             strategyMap.get(selectedPassType).handlePass(selectedPass, lockerPolicy);
@@ -45,9 +45,9 @@ public class StudyCafePassMachine {
         return config.getInputHandler().getPassTypeSelectingUserAction();
     }
 
-    private StudyCafePass handlePassSelection(StudyCafePassType passType) {
-        StudyCafePasses availablePasses = config.getFileHandler().readStudyCafePasses();
-        List<StudyCafePass> filteredPasses = availablePasses.findBy(passType);
+    private StudyCafeSeatPass handlePassSelection(StudyCafePassType passType) {
+        StudyCafeSeatPasses availablePasses = config.getFileHandler().readStudyCafePasses();
+        List<StudyCafeSeatPass> filteredPasses = availablePasses.findBy(passType);
 
         config.getOutputHandler().showPassListForSelection(filteredPasses);
         return config.getInputHandler().getSelectPass(filteredPasses);

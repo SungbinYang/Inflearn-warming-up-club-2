@@ -3,8 +3,8 @@ package me.sungbin.day7.config;
 import me.sungbin.day7.io.InputHandler;
 import me.sungbin.day7.io.OutputHandler;
 import me.sungbin.day7.io.StudyCafeFileHandler;
-import me.sungbin.day7.model.LockerPolicyType;
-import me.sungbin.day7.model.StudyCafePassType;
+import me.sungbin.day7.model.pass.locker.policy.LockerPolicyType;
+import me.sungbin.day7.model.pass.StudyCafePassType;
 
 import java.util.Arrays;
 import java.util.HashMap;

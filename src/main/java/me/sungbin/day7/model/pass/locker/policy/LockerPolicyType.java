@@ -1,7 +1,10 @@
-package me.sungbin.day7.model;
+package me.sungbin.day7.model.pass.locker.policy;
 
 import me.sungbin.day7.config.StudyCafeConfigProvider;
 import me.sungbin.day7.io.StudyCafeFileHandler;
+import me.sungbin.day7.model.pass.StudyCafeSeatPass;
+import me.sungbin.day7.model.pass.locker.StudyCafeLockerRentalPass;
+import me.sungbin.day7.model.pass.locker.StudyCafeLockerRentalPasses;
 
 import java.util.Optional;
 
@@ -14,10 +17,10 @@ public enum LockerPolicyType {
         }
 
         @Override
-        public Optional<StudyCafeLockerPass> handleLockerUsage(StudyCafePass selectedPass) {
+        public Optional<StudyCafeLockerRentalPass> handleLockerUsage(StudyCafeSeatPass selectedPass) {
             StudyCafeFileHandler fileHandler = StudyCafeConfigProvider.getConfig().getFileHandler();
 
-            StudyCafeLockerPasses availableLockerPasses = fileHandler.readLockerPasses(selectedPass.getPassType());
+            StudyCafeLockerRentalPasses availableLockerPasses = fileHandler.readLockerPasses(selectedPass.getPassType());
 
             return availableLockerPasses.findBy(selectedPass);
         }
@@ -29,12 +32,12 @@ public enum LockerPolicyType {
         }
 
         @Override
-        public Optional<StudyCafeLockerPass> handleLockerUsage(StudyCafePass selectedPass) {
+        public Optional<StudyCafeLockerRentalPass> handleLockerUsage(StudyCafeSeatPass selectedPass) {
             return Optional.empty();
         }
     };
 
     public abstract boolean canUseLocker();
-    public abstract Optional<StudyCafeLockerPass> handleLockerUsage(StudyCafePass selectedPass);
+    public abstract Optional<StudyCafeLockerRentalPass> handleLockerUsage(StudyCafeSeatPass selectedPass);
 }
 

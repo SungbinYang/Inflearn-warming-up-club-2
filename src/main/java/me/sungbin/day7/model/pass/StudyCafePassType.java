@@ -1,7 +1,8 @@
-package me.sungbin.day7.model;
+package me.sungbin.day7.model.pass;
 
 import me.sungbin.day7.config.StudyCafeConfigProvider;
 import me.sungbin.day7.io.OutputHandler;
+import me.sungbin.day7.model.pass.locker.policy.LockerPolicyType;
 
 import java.util.function.BiConsumer;
 
@@ -12,9 +13,9 @@ public enum StudyCafePassType {
     FIXED("1인 고정석", StudyCafePassType::handleCommonPassFor);
 
     private final String description;
-    private final BiConsumer<StudyCafePass, LockerPolicyType> passHandler;
+    private final BiConsumer<StudyCafeSeatPass, LockerPolicyType> passHandler;
 
-    StudyCafePassType(String description, BiConsumer<StudyCafePass, LockerPolicyType> passHandler) {
+    StudyCafePassType(String description, BiConsumer<StudyCafeSeatPass, LockerPolicyType> passHandler) {
         this.description = description;
         this.passHandler = passHandler;
     }
@@ -23,11 +24,11 @@ public enum StudyCafePassType {
         return description;
     }
 
-    public void handlePass(StudyCafePass selectedPass, LockerPolicyType lockerPolicy) {
+    public void handlePass(StudyCafeSeatPass selectedPass, LockerPolicyType lockerPolicy) {
         passHandler.accept(selectedPass, lockerPolicy);
     }
 
-    private static void handleCommonPassFor(StudyCafePass selectedPass, LockerPolicyType lockerPolicy) {
+    private static void handleCommonPassFor(StudyCafeSeatPass selectedPass, LockerPolicyType lockerPolicy) {
         OutputHandler outputHandler = StudyCafeConfigProvider.getConfig().getOutputHandler();
 
         lockerPolicy.handleLockerUsage(selectedPass).ifPresentOrElse(

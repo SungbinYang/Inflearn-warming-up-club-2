@@ -1,23 +1,24 @@
-package me.sungbin.day7.model;
+package me.sungbin.day7.model.pass.locker;
 
 import me.sungbin.day7.config.StudyCafeConfigProvider;
+import me.sungbin.day7.model.pass.StudyCafeSeatPass;
 
 import java.util.List;
 import java.util.Optional;
 
-public class StudyCafeLockerPasses {
+public class StudyCafeLockerRentalPasses {
 
-    private final List<StudyCafeLockerPass> lockerPasses;
+    private final List<StudyCafeLockerRentalPass> lockerPasses;
 
-    private StudyCafeLockerPasses(List<StudyCafeLockerPass> lockerPasses) {
+    private StudyCafeLockerRentalPasses(List<StudyCafeLockerRentalPass> lockerPasses) {
         this.lockerPasses = lockerPasses;
     }
 
-    public static StudyCafeLockerPasses of(List<StudyCafeLockerPass> lockerPasses) {
-        return new StudyCafeLockerPasses(lockerPasses);
+    public static StudyCafeLockerRentalPasses of(List<StudyCafeLockerRentalPass> lockerPasses) {
+        return new StudyCafeLockerRentalPasses(lockerPasses);
     }
 
-    public Optional<StudyCafeLockerPass> findBy(StudyCafePass selectedPass) {
+    public Optional<StudyCafeLockerRentalPass> findBy(StudyCafeSeatPass selectedPass) {
         return lockerPasses.stream()
                 .filter(selectedPass::isSameLocker)
                 .findFirst()
