@@ -4,14 +4,14 @@ import me.sungbin.day7.io.OutputHandler;
 
 public class HourlyPassStrategy implements StudyCafePassStrategy {
 
-    private final StudyCafePassHelper passHelper;
+    private final OutputHandler outputHandler;
 
     public HourlyPassStrategy(OutputHandler outputHandler) {
-        this.passHelper = new StudyCafePassHelper(outputHandler);
+        this.outputHandler = outputHandler;
     }
 
     @Override
     public void handlePass(StudyCafePass selectedPass) {
-        passHelper.showPassOrderSummary(selectedPass, null);
+        outputHandler.showPassOrderSummary(selectedPass, null);
     }
 }

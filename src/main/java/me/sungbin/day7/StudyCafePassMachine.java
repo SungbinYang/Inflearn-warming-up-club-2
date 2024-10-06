@@ -14,7 +14,6 @@ public class StudyCafePassMachine {
     private final InputHandler inputHandler = new InputHandler();
     private final OutputHandler outputHandler = new OutputHandler();
     private final StudyCafeFileHandler fileHandler = new StudyCafeFileHandler();
-    private final List<StudyCafePass> availablePasses = fileHandler.readStudyCafePasses();
 
     private final Map<StudyCafePassType, StudyCafePassStrategy> strategyMap = Map.of(
             StudyCafePassType.FIXED, new FixedPassStrategy(inputHandler, outputHandler, fileHandler),
@@ -46,6 +45,7 @@ public class StudyCafePassMachine {
     }
 
     private StudyCafePass handlePassSelection(StudyCafePassType passType) {
+        List<StudyCafePass> availablePasses = fileHandler.readStudyCafePasses();
         List<StudyCafePass> filteredPasses = availablePasses.stream()
                 .filter(pass -> pass.getPassType() == passType)
                 .toList();
