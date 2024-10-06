@@ -28,7 +28,6 @@ public class StudyCafePassMachine {
             StudyCafePassType selectedPassType = getSelectedPassType();
             StudyCafePass selectedPass = handlePassSelection(selectedPassType);
 
-            // 각 패스 타입의 전략 실행 및 라커 정책 반영
             LockerPolicyType lockerPolicy = lockerPolicyMap.get(selectedPassType);
             strategyMap.get(selectedPassType).handlePass(selectedPass, lockerPolicy);
 
