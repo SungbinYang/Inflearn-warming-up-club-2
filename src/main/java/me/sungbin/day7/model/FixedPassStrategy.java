@@ -1,5 +1,6 @@
 package me.sungbin.day7.model;
 
+import me.sungbin.day7.config.StudyCafeConfigProvider;
 import me.sungbin.day7.io.InputHandler;
 import me.sungbin.day7.io.OutputHandler;
 import me.sungbin.day7.io.StudyCafeFileHandler;
@@ -9,18 +10,10 @@ import java.util.Optional;
 
 public class FixedPassStrategy implements StudyCafePassStrategy {
 
-    private final InputHandler inputHandler;
-    private final OutputHandler outputHandler;
-    private final StudyCafeFileHandler fileHandler;
-
-    public FixedPassStrategy(InputHandler inputHandler, OutputHandler outputHandler, StudyCafeFileHandler fileHandler) {
-        this.inputHandler = inputHandler;
-        this.outputHandler = outputHandler;
-        this.fileHandler = fileHandler;
-    }
-
     @Override
     public void handlePass(StudyCafePass selectedPass) {
+        OutputHandler outputHandler = StudyCafeConfigProvider.getConfig().getOutputHandler();
+
         findLockerForFixedPass(selectedPass)
                 .ifPresentOrElse(
                         lockerPass -> outputHandler.showPassOrderSummary(selectedPass, lockerPass),
@@ -29,7 +22,9 @@ public class FixedPassStrategy implements StudyCafePassStrategy {
     }
 
     private Optional<StudyCafeLockerPass> findLockerForFixedPass(StudyCafePass selectedPass) {
-        List<StudyCafeLockerPass> availableLockerPasses = fileHandler.readLockerPasses();
+        List<StudyCafeLockerPass> availableLockerPasses = StudyCafeConfigProvider.getConfig().getFileHandler().readLockerPasses();
+        InputHandler inputHandler = StudyCafeConfigProvider.getConfig().getInputHandler();
+        OutputHandler outputHandler = StudyCafeConfigProvider.getConfig().getOutputHandler();
 
         return availableLockerPasses.stream()
                 .filter(lockerPass -> lockerPass.getPassType() == selectedPass.getPassType() &&

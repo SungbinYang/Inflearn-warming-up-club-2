@@ -1,5 +1,6 @@
 package me.sungbin.day7;
 
+import me.sungbin.day7.config.StudyCafeConfig;
 import me.sungbin.day7.exception.AppException;
 import me.sungbin.day7.io.InputHandler;
 import me.sungbin.day7.io.OutputHandler;
@@ -11,15 +12,17 @@ import java.util.Map;
 
 public class StudyCafePassMachine {
 
-    private final InputHandler inputHandler = new InputHandler();
-    private final OutputHandler outputHandler = new OutputHandler();
+    private final InputHandler inputHandler;
+    private final OutputHandler outputHandler;
     private final StudyCafeFileHandler fileHandler = new StudyCafeFileHandler();
 
-    private final Map<StudyCafePassType, StudyCafePassStrategy> strategyMap = Map.of(
-            StudyCafePassType.FIXED, new FixedPassStrategy(inputHandler, outputHandler, fileHandler),
-            StudyCafePassType.HOURLY, new HourlyPassStrategy(outputHandler),
-            StudyCafePassType.WEEKLY, new WeeklyPassStrategy(outputHandler)
-    );
+    private final Map<StudyCafePassType, StudyCafePassStrategy> strategyMap;
+
+    public StudyCafePassMachine(StudyCafeConfig studyCafeConfig) {
+        this.inputHandler = studyCafeConfig.getInputHandler();
+        this.outputHandler = studyCafeConfig.getOutputHandler();
+        this.strategyMap = studyCafeConfig.getStrategyMap();
+    }
 
     public void run() {
         try {
