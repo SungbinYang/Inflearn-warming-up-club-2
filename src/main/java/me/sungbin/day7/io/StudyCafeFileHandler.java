@@ -16,6 +16,7 @@ public class StudyCafeFileHandler {
         try {
             List<String> lines = Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/pass-list.csv"));
             List<StudyCafePass> studyCafePasses = new ArrayList<>();
+
             for (String line : lines) {
                 String[] values = line.split(",");
                 StudyCafePassType studyCafePassType = StudyCafePassType.valueOf(values[0]);
@@ -37,6 +38,7 @@ public class StudyCafeFileHandler {
         try {
             List<String> lines = Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/locker.csv"));
             List<StudyCafeLockerPass> lockerPasses = new ArrayList<>();
+
             for (String line : lines) {
                 String[] values = line.split(",");
                 StudyCafePassType studyCafePassType = StudyCafePassType.valueOf(values[0]);
@@ -52,5 +54,4 @@ public class StudyCafeFileHandler {
             throw new RuntimeException("파일을 읽는데 실패했습니다.", e);
         }
     }
-
 }
