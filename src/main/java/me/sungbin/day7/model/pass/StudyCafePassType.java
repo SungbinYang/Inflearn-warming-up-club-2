@@ -1,10 +1,10 @@
 package me.sungbin.day7.model.pass;
 
 import me.sungbin.day7.config.StudyCafeConfigProvider;
-import me.sungbin.day7.io.OutputHandler;
-import me.sungbin.day7.model.pass.locker.policy.LockerPolicyType;
+import me.sungbin.day7.io.ConsoleOutputHandler;
+import me.sungbin.day7.model.order.Order;
 
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public enum StudyCafePassType {
 
@@ -13,27 +13,20 @@ public enum StudyCafePassType {
     FIXED("1인 고정석", StudyCafePassType::handleCommonPassFor);
 
     private final String description;
-    private final BiConsumer<StudyCafeSeatPass, LockerPolicyType> passHandler;
+    private final Consumer<Order> passHandler;
 
-    StudyCafePassType(String description, BiConsumer<StudyCafeSeatPass, LockerPolicyType> passHandler) {
+    StudyCafePassType(String description, Consumer<Order> passHandler) {
         this.description = description;
         this.passHandler = passHandler;
     }
 
-    public String getDescription() {
-        return description;
+    public void handlePass(Order order) {
+        passHandler.accept(order);
     }
 
-    public void handlePass(StudyCafeSeatPass selectedPass, LockerPolicyType lockerPolicy) {
-        passHandler.accept(selectedPass, lockerPolicy);
-    }
+    private static void handleCommonPassFor(Order order) {
+        ConsoleOutputHandler outputHandler = StudyCafeConfigProvider.getConfig().getOutputHandler();
 
-    private static void handleCommonPassFor(StudyCafeSeatPass selectedPass, LockerPolicyType lockerPolicy) {
-        OutputHandler outputHandler = StudyCafeConfigProvider.getConfig().getOutputHandler();
-
-        lockerPolicy.handleLockerUsage(selectedPass).ifPresentOrElse(
-                lockerPass -> outputHandler.showPassOrderSummary(selectedPass, lockerPass),
-                () -> outputHandler.showPassOrderSummary(selectedPass)
-        );
+        outputHandler.showPassOrderSummary(order);
     }
 }
