@@ -1,7 +1,7 @@
 package me.sungbin.day7.model.pass.locker.policy;
 
-import me.sungbin.day7.config.StudyCafeConfigProvider;
-import me.sungbin.day7.io.StudyCafeLockerReadProvider;
+import me.sungbin.day7.config.provider.StudyCafeConfigProvider;
+import me.sungbin.day7.io.provider.StudyCafeLockerReadProvider;
 import me.sungbin.day7.model.pass.StudyCafeSeatPass;
 import me.sungbin.day7.model.pass.locker.StudyCafeLockerRentalPass;
 import me.sungbin.day7.model.pass.locker.StudyCafeLockerRentalPasses;

@@ -1,4 +1,4 @@
-package me.sungbin.day7.io;
+package me.sungbin.day7.io.handler;
 
 import me.sungbin.day7.model.pass.StudyCafePassType;
 import me.sungbin.day7.model.pass.StudyCafeSeatPass;

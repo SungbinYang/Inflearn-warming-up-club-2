@@ -1,10 +1,10 @@
 package me.sungbin.day7;
 
-import me.sungbin.day7.config.StudyCafeConfigProvider;
+import me.sungbin.day7.config.provider.StudyCafeConfigProvider;
 import me.sungbin.day7.exception.AppException;
-import me.sungbin.day7.io.InputHandler;
-import me.sungbin.day7.io.OutputHandler;
-import me.sungbin.day7.io.StudyCafeSeatReadProvider;
+import me.sungbin.day7.io.handler.InputHandler;
+import me.sungbin.day7.io.handler.OutputHandler;
+import me.sungbin.day7.io.provider.StudyCafeSeatReadProvider;
 import me.sungbin.day7.model.Initializable;
 import me.sungbin.day7.model.RunnableMachine;
 import me.sungbin.day7.model.order.Order;

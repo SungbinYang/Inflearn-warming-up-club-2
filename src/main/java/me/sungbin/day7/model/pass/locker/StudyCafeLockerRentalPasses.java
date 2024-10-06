@@ -1,6 +1,6 @@
 package me.sungbin.day7.model.pass.locker;
 
-import me.sungbin.day7.config.StudyCafeConfigProvider;
+import me.sungbin.day7.config.provider.StudyCafeConfigProvider;
 import me.sungbin.day7.model.pass.StudyCafeSeatPass;
 
 import java.util.List;

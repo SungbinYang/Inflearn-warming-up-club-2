@@ -1,7 +1,7 @@
 package me.sungbin.day7.model.pass;
 
-import me.sungbin.day7.config.StudyCafeConfigProvider;
-import me.sungbin.day7.io.OutputHandler;
+import me.sungbin.day7.config.provider.StudyCafeConfigProvider;
+import me.sungbin.day7.io.handler.OutputHandler;
 import me.sungbin.day7.model.order.Order;
 
 import java.util.function.Consumer;

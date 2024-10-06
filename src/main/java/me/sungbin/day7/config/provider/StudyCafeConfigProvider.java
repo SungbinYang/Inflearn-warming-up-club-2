@@ -1,9 +1,10 @@
-package me.sungbin.day7.config;
+package me.sungbin.day7.config.provider;
 
-import me.sungbin.day7.io.InputHandler;
-import me.sungbin.day7.io.OutputHandler;
-import me.sungbin.day7.io.StudyCafeLockerReadProvider;
-import me.sungbin.day7.io.StudyCafeSeatReadProvider;
+import me.sungbin.day7.config.StudyCafeConfig;
+import me.sungbin.day7.io.handler.InputHandler;
+import me.sungbin.day7.io.handler.OutputHandler;
+import me.sungbin.day7.io.provider.StudyCafeLockerReadProvider;
+import me.sungbin.day7.io.provider.StudyCafeSeatReadProvider;
 import me.sungbin.day7.model.pass.StudyCafePassType;
 import me.sungbin.day7.model.pass.locker.policy.LockerPolicyType;
 
