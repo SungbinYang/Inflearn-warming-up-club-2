@@ -4,29 +4,34 @@ import me.sungbin.day7.exception.AppException;
 import me.sungbin.day7.io.InputHandler;
 import me.sungbin.day7.io.OutputHandler;
 import me.sungbin.day7.io.StudyCafeFileHandler;
-import me.sungbin.day7.model.StudyCafeLockerPass;
-import me.sungbin.day7.model.StudyCafePass;
-import me.sungbin.day7.model.StudyCafePassType;
+import me.sungbin.day7.model.*;
 
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Map;
 
 public class StudyCafePassMachine {
 
     private final InputHandler inputHandler = new InputHandler();
     private final OutputHandler outputHandler = new OutputHandler();
-    private final StudyCafeFileHandler studyCafeFileHandler = new StudyCafeFileHandler();
-    private final List<StudyCafePass> studyCafePasses = studyCafeFileHandler.readStudyCafePasses();
+    private final StudyCafeFileHandler fileHandler = new StudyCafeFileHandler();
+    private final List<StudyCafePass> availablePasses = fileHandler.readStudyCafePasses();
+
+    private final Map<StudyCafePassType, StudyCafePassStrategy> strategyMap = Map.of(
+            StudyCafePassType.FIXED, new FixedPassStrategy(inputHandler, outputHandler, fileHandler),
+            StudyCafePassType.HOURLY, new HourlyPassStrategy(outputHandler),
+            StudyCafePassType.WEEKLY, new WeeklyPassStrategy(outputHandler)
+    );
 
     public void run() {
         try {
             outputHandler.showWelcomeMessage();
             outputHandler.showAnnouncement();
 
-            outputHandler.askPassTypeSelection();
-            StudyCafePassType studyCafePassType = inputHandler.getPassTypeSelectingUserAction();
+            StudyCafePassType selectedPassType = getSelectedPassType();
+            StudyCafePass selectedPass = handlePassSelection(selectedPassType);
 
-            processPassSelection(studyCafePassType);
+            StudyCafePassStrategy strategy = strategyMap.get(selectedPassType);
+            strategy.handlePass(selectedPass);
 
         } catch (AppException e) {
             outputHandler.showSimpleMessage(e.getMessage());
@@ -35,41 +40,17 @@ public class StudyCafePassMachine {
         }
     }
 
-    private void processPassSelection(StudyCafePassType passType) {
-        // 필터링 기준을 결정
-        Predicate<StudyCafePass> passFilter = pass -> pass.getPassType() == passType;
+    private StudyCafePassType getSelectedPassType() {
+        outputHandler.askPassTypeSelection();
+        return inputHandler.getPassTypeSelectingUserAction();
+    }
 
-        List<StudyCafePass> filteredPasses = studyCafePasses.stream()
-                .filter(passFilter)
+    private StudyCafePass handlePassSelection(StudyCafePassType passType) {
+        List<StudyCafePass> filteredPasses = availablePasses.stream()
+                .filter(pass -> pass.getPassType() == passType)
                 .toList();
 
         outputHandler.showPassListForSelection(filteredPasses);
-        StudyCafePass selectedPass = inputHandler.getSelectPass(filteredPasses);
-
-        if (passType == StudyCafePassType.FIXED) {
-            processFixedPass(selectedPass);
-        } else {
-            outputHandler.showPassOrderSummary(selectedPass, null);
-        }
-    }
-
-    private void processFixedPass(StudyCafePass selectedPass) {
-        List<StudyCafeLockerPass> lockerPasses = studyCafeFileHandler.readLockerPasses();
-
-        StudyCafeLockerPass lockerPass = lockerPasses.stream()
-                .filter(option ->
-                        option.getPassType() == selectedPass.getPassType() &&
-                                option.getDuration() == selectedPass.getDuration())
-                .findFirst()
-                .orElse(null);
-
-        boolean lockerSelection = false;
-
-        if (lockerPass != null) {
-            outputHandler.askLockerPass(lockerPass);
-            lockerSelection = inputHandler.getLockerSelection();
-        }
-
-        outputHandler.showPassOrderSummary(selectedPass, lockerSelection ? lockerPass : null);
+        return inputHandler.getSelectPass(filteredPasses);
     }
 }
