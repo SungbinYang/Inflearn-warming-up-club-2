@@ -13,10 +13,6 @@ import java.util.Map;
 public class StudyCafeConfigProvider {
     private static final StudyCafeConfig CONFIG = new StudyCafeConfig();
 
-    public static StudyCafeConfig getConfig() {
-        return CONFIG;
-    }
-
     public static InputHandler getInputHandler() {
         return CONFIG.getInputHandler();
     }
