@@ -25,7 +25,6 @@ public class StudyCafePassMachine implements Initializable, RunnableMachine {
     private final Map<StudyCafePassType, LockerPolicyType> lockerPolicyMap;
     private final Map<StudyCafePassType, StudyCafePassType> strategyMap;
 
-    // 생성자에서 필요한 객체들을 한 번만 가져옴
     public StudyCafePassMachine() {
         this.outputHandler = StudyCafeConfigProvider.getOutputHandler();
         this.inputHandler = StudyCafeConfigProvider.getInputHandler();
