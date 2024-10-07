@@ -23,9 +23,9 @@ public class StudyCafeLockerRentalPasses {
                 .filter(selectedPass::isSameLocker)
                 .findFirst()
                 .flatMap(lockerPass -> {
-                    StudyCafeConfigProvider.getConfig().getOutputHandler().askLockerPass(lockerPass);
+                    StudyCafeConfigProvider.getOutputHandler().askLockerPass(lockerPass);
 
-                    boolean lockerSelected = StudyCafeConfigProvider.getConfig().getInputHandler().getLockerSelection();
+                    boolean lockerSelected = StudyCafeConfigProvider.getInputHandler().getLockerSelection();
 
                     return lockerSelected ? Optional.of(lockerPass) : Optional.empty();
                 });

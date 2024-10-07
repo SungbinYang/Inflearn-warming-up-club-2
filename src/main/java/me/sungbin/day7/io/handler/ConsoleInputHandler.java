@@ -50,6 +50,14 @@ public class ConsoleInputHandler implements InputHandler {
     public boolean getLockerSelection() {
         String userInput = SCANNER.nextLine();
 
-        return "1".equals(userInput);
+        if ("1".equals(userInput)) {
+            return true;
+        }
+
+        if ("2".equals(userInput)) {
+            return false;
+        }
+
+        throw new AppException("잘못된 입력입니다.");
     }
 }
