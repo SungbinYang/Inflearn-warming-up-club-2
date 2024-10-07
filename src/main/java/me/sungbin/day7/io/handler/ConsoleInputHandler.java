@@ -1,6 +1,6 @@
 package me.sungbin.day7.io.handler;
 
-import me.sungbin.day7.exception.AppException;
+import me.sungbin.day7.exception.StudyCafeApplicationException;
 import me.sungbin.day7.model.pass.StudyCafePassType;
 import me.sungbin.day7.model.pass.StudyCafeSeatPass;
 
@@ -27,7 +27,7 @@ public class ConsoleInputHandler implements InputHandler {
             return StudyCafePassType.FIXED;
         }
 
-        throw new AppException("잘못된 입력입니다.");
+        throw new StudyCafeApplicationException("잘못된 입력입니다.");
     }
 
     @Override
@@ -37,12 +37,12 @@ public class ConsoleInputHandler implements InputHandler {
             int selectedIndex = Integer.parseInt(userInput) - 1;
 
             if (selectedIndex < 0 || selectedIndex >= passes.size()) {
-                throw new AppException("잘못된 선택입니다.");
+                throw new StudyCafeApplicationException("잘못된 선택입니다.");
             }
 
             return passes.get(selectedIndex);
         } catch (NumberFormatException e) {
-            throw new AppException("잘못된 형식의 입력입니다. 숫자를 입력해 주세요.");
+            throw new StudyCafeApplicationException("잘못된 형식의 입력입니다. 숫자를 입력해 주세요.");
         }
     }
 
@@ -58,6 +58,6 @@ public class ConsoleInputHandler implements InputHandler {
             return false;
         }
 
-        throw new AppException("잘못된 입력입니다.");
+        throw new StudyCafeApplicationException("잘못된 입력입니다.");
     }
 }

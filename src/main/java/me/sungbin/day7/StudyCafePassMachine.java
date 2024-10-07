@@ -1,7 +1,7 @@
 package me.sungbin.day7;
 
 import me.sungbin.day7.config.provider.StudyCafeConfigProvider;
-import me.sungbin.day7.exception.AppException;
+import me.sungbin.day7.exception.StudyCafeApplicationException;
 import me.sungbin.day7.io.handler.InputHandler;
 import me.sungbin.day7.io.handler.OutputHandler;
 import me.sungbin.day7.io.provider.StudyCafeSeatReadProvider;
@@ -46,7 +46,7 @@ public class StudyCafePassMachine implements Initializable, RunnableMachine {
             StudyCafeSeatPass selectedPass = selectPassForType(selectedPassType);
             Order order = createOrder(selectedPassType, selectedPass);
             processOrderWithStrategy(selectedPassType, order);
-        } catch (AppException e) {
+        } catch (StudyCafeApplicationException e) {
             outputHandler.showSimpleMessage(e.getMessage());
         } catch (Exception e) {
             outputHandler.showSimpleMessage("알 수 없는 오류가 발생했습니다.");
