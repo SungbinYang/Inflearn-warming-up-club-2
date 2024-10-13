@@ -2,7 +2,6 @@ package me.sungbin.day12.studycafe.io.provider;
 
 import me.sungbin.day12.studycafe.model.pass.StudyCafePassType;
 import me.sungbin.day12.studycafe.model.pass.StudyCafeSeatPass;
-import me.sungbin.day12.studycafe.model.pass.locker.StudyCafeLockerPass;
 import me.sungbin.day12.studycafe.model.pass.locker.StudyCafeLockerPasses;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mockStatic;
 
 class LockerPassFileReaderTest {
 

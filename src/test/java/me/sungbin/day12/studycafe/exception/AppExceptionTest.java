@@ -8,12 +8,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class AppExceptionTest {
 
     @Test
-    @DisplayName("애플리케이션에서 문제가 발생했을 때 AppException을 발생시켜야 한다")
+    @DisplayName("예기치 못한 시스템 오류가 발생하면 알림이 전달되어야 한다")
     void shouldThrowAppExceptionWhenApplicationErrorOccurs() {
-        // Given: 예외 메시지를 설정
+        // Given
         String errorMessage = "예상치 못한 오류가 발생했습니다.";
 
-        // When & Then: AppException 발생 검증
+        // When & Then
         assertThatThrownBy(() -> {
             throw new AppException(errorMessage);
         }).isInstanceOf(AppException.class)
@@ -21,12 +21,12 @@ class AppExceptionTest {
     }
 
     @Test
-    @DisplayName("예외 메시지가 null일 때도 AppException이 발생해야 한다")
+    @DisplayName("오류 메시지가 제공되지 않아도 시스템 오류가 처리되어야 한다")
     void shouldThrowAppExceptionWhenMessageIsNull() {
-        // Given: null 메시지를 설정
+        // Given
         String nullMessage = null;
 
-        // When & Then: 메시지가 null이어도 예외 발생 검증
+        // When & Then
         assertThatThrownBy(() -> {
             throw new AppException(nullMessage);
         }).isInstanceOf(AppException.class)
@@ -34,12 +34,12 @@ class AppExceptionTest {
     }
 
     @Test
-    @DisplayName("빈 문자열 메시지로도 AppException이 발생해야 한다")
+    @DisplayName("빈 메시지로도 시스템 오류가 전달되어야 한다")
     void shouldThrowAppExceptionWhenMessageIsEmpty() {
-        // Given: 빈 문자열 메시지를 설정
+        // Given
         String emptyMessage = "";
 
-        // When & Then: 빈 메시지로 예외 발생 검증
+        // When & Then
         assertThatThrownBy(() -> {
             throw new AppException(emptyMessage);
         }).isInstanceOf(AppException.class)

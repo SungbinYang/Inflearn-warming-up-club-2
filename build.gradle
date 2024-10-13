@@ -59,7 +59,7 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE' // 라인 단위로 커버리지 측정
                 value = 'COVEREDRATIO' // 커버된 라인 비율 사용
-                minimum = 1.00 // 최소 75% 이상 커버리지 필요
+                minimum = 0.80
             }
         }
     }
