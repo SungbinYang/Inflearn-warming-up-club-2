@@ -41,7 +41,8 @@ jacocoTestReport {
                         'me/sungbin/day2/**',
                         'me/sungbin/day4/**',
                         'me/sungbin/day7/**',
-                        'me/sungbin/day12/studycafe/**'
+                        'me/sungbin/day12/minesweeper/**',
+                        'me/sungbin/day12/**/**Application**'
                 ])
         )
     }
@@ -69,7 +70,8 @@ jacocoTestCoverageVerification {
                         'me/sungbin/day2/**',
                         'me/sungbin/day4/**',
                         'me/sungbin/day7/**',
-                        'me/sungbin/day12/studycafe/**'
+                        'me/sungbin/day12/**/**Application**',
+                        'me/sungbin/day12/minesweeper/**'
                 ])
         )
     }
