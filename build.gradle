@@ -40,7 +40,8 @@ jacocoTestReport {
                 fileTree(dir: layout.buildDirectory.dir("classes/java/main").get(), exclude: [
                         'me/sungbin/day2/**',
                         'me/sungbin/day4/**',
-                        'me/sungbin/day7/**'
+                        'me/sungbin/day7/**',
+                        'me/sungbin/day12/studycafe/**'
                 ])
         )
     }
@@ -67,7 +68,8 @@ jacocoTestCoverageVerification {
                 fileTree(dir: layout.buildDirectory.dir("classes/java/main").get(), exclude: [
                         'me/sungbin/day2/**',
                         'me/sungbin/day4/**',
-                        'me/sungbin/day7/**'
+                        'me/sungbin/day7/**',
+                        'me/sungbin/day12/studycafe/**'
                 ])
         )
     }
