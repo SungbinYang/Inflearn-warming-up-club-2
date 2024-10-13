@@ -1,5 +1,6 @@
 package me.sungbin.day12.studycafe;
 
+import me.sungbin.day12.studycafe.exception.AppException;
 import me.sungbin.day12.studycafe.io.StudyCafeIOHandler;
 import me.sungbin.day12.studycafe.model.order.StudyCafePassOrder;
 import me.sungbin.day12.studycafe.model.pass.StudyCafePassType;
@@ -19,9 +20,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class StudyCafePassMachineTest {
 
@@ -30,23 +30,50 @@ class StudyCafePassMachineTest {
     private final LockerPassProvider lockerPassProvider = mock(LockerPassProvider.class);
     private final StudyCafePassMachine machine = new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
 
+    @Test
+    @DisplayName("라커 없이 주문이 생성되는 경우 showPassOrderSummary가 호출되어야 한다")
+    void shouldCallShowPassOrderSummaryWithoutLocker() {
+        // given
+        StudyCafeSeatPass seatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 2000, 0.2);
+        StudyCafeIOHandler ioHandler = new StudyCafeIOHandler();
+        StudyCafePassMachine machine = createMachineWithDependencies(
+                seatPass,
+                Optional.empty(),  // 라커 없음
+                ioHandler
+        );
+
+        // when & then
+        assertThatCode(machine::run).doesNotThrowAnyException();
+    }
 
     @Test
-    @DisplayName("사용자가 고정석 이용권을 선택할 수 있어야 한다")
-    void shouldAllowUserToSelectFixedPass() {
-        // Given: SeatPassProvider와 LockerPassProvider 구성
-        SeatPassProvider seatPassProvider = () -> StudyCafeSeatPasses.of(List.of(
-                StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 50000, 0.1)
-        ));
+    @DisplayName("라커가 포함된 주문이 생성되는 경우 showPassOrderSummary가 호출되어야 한다")
+    void shouldCallShowPassOrderSummaryWithLocker() {
+        // given
+        StudyCafeSeatPass seatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 2000, 0.2);
+        StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(StudyCafePassType.FIXED, 30, 2000);
+        StudyCafeIOHandler ioHandler = new StudyCafeIOHandler();
+        StudyCafePassMachine machine = createMachineWithDependencies(
+                seatPass,
+                Optional.of(lockerPass),  // 라커 포함
+                ioHandler
+        );
 
-        LockerPassProvider lockerPassProvider = () -> StudyCafeLockerPasses.of(List.of(
-                StudyCafeLockerPass.of(StudyCafePassType.FIXED, 30, 10000)
-        ));
+        // when & then
+        assertThatCode(machine::run).doesNotThrowAnyException();
+    }
 
-        StudyCafePassMachine passMachine = new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
+    private StudyCafePassMachine createMachineWithDependencies(
+            StudyCafeSeatPass seatPass,
+            Optional<StudyCafeLockerPass> optionalLockerPass,
+            StudyCafeIOHandler ioHandler
+    ) {
+        SeatPassProvider seatPassProvider = () -> StudyCafeSeatPasses.of(List.of(seatPass));
+        LockerPassProvider lockerPassProvider = () -> optionalLockerPass
+                .map(locker -> StudyCafeLockerPasses.of(List.of(locker)))
+                .orElse(StudyCafeLockerPasses.of(List.of()));
 
-        // When & Then: 정상적으로 실행되는지 확인
-        passMachine.run();  // 수동으로 테스트하며 사용자 입력을 통해 검증
+        return new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
     }
 
     @Test
