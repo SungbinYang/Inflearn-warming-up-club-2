@@ -24,7 +24,7 @@ class OutputHandlerTest {
     @Test
     @DisplayName("프리미엄 스터디카페 환영 메시지가 출력된다")
     void shouldDisplayWelcomeMessage() {
-        // When: 환영 메시지 표시
+        // Given & When: 환영 메시지 표시
         String output = captureOutput(outputHandler::showWelcomeMessage);
 
         // Then: 올바른 환영 메시지가 출력됨
@@ -34,7 +34,7 @@ class OutputHandlerTest {
     @Test
     @DisplayName("이용권과 사물함 안내 메시지가 출력된다")
     void shouldDisplayAnnouncementMessage() {
-        // When: 공지사항 표시
+        // Given & When: 공지사항 표시
         String output = captureOutput(outputHandler::showAnnouncement);
 
         // Then: 올바른 안내 메시지가 출력됨
@@ -47,7 +47,7 @@ class OutputHandlerTest {
     @Test
     @DisplayName("이용권 선택을 요청하는 메시지가 출력된다")
     void shouldAskForPassTypeSelection() {
-        // When: 이용권 선택 요청 메시지 표시
+        // Given & When: 이용권 선택 요청 메시지 표시
         String output = captureOutput(outputHandler::askPassTypeSelection);
 
         // Then: 이용권 선택 안내 메시지가 출력됨

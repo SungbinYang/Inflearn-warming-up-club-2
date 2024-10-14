@@ -16,17 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StudyCafeIOHandlerTest {
 
-    private ByteArrayOutputStream captureOutput() {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
-        return outputStream;
-    }
-
-    private void provideInput(String input) {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
-        System.setIn(inputStream);
-    }
-
     @Test
     @DisplayName("고정석 이용권 선택 시 FIXED 유형을 반환해야 한다")
     void shouldReturnFixedPassTypeWhenUserSelectsFixedPass() {
@@ -159,5 +148,16 @@ class StudyCafeIOHandlerTest {
                 "* 사물함은 고정석 선택 시 이용 가능합니다. (추가 결제)",
                 "* !오픈 이벤트! 2주권 이상 결제 시 10% 할인, 12주권 결제 시 15% 할인!"
         );
+    }
+
+    private ByteArrayOutputStream captureOutput() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+        return outputStream;
+    }
+
+    private void provideInput(String input) {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
     }
 }
