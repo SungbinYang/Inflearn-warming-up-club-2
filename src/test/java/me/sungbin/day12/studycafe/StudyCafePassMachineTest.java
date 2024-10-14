@@ -1,8 +1,6 @@
 package me.sungbin.day12.studycafe;
 
-import me.sungbin.day12.studycafe.exception.AppException;
 import me.sungbin.day12.studycafe.io.StudyCafeIOHandler;
-import me.sungbin.day12.studycafe.model.order.StudyCafePassOrder;
 import me.sungbin.day12.studycafe.model.pass.StudyCafePassType;
 import me.sungbin.day12.studycafe.model.pass.StudyCafeSeatPass;
 import me.sungbin.day12.studycafe.model.pass.StudyCafeSeatPasses;
@@ -20,7 +18,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
 
 class StudyCafePassMachineTest {
@@ -31,49 +30,28 @@ class StudyCafePassMachineTest {
     private final StudyCafePassMachine machine = new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
 
     @Test
-    @DisplayName("라커 없이 주문이 생성되는 경우 showPassOrderSummary가 호출되어야 한다")
+    @DisplayName("고정석 이용권 주문 시 사물함 없이도 주문 요약이 정상 출력된다")
     void shouldCallShowPassOrderSummaryWithoutLocker() {
-        // given
+        // given: 고정석 이용권을 선택하고 사물함을 사용하지 않음
         StudyCafeSeatPass seatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 2000, 0.2);
-        StudyCafeIOHandler ioHandler = new StudyCafeIOHandler();
-        StudyCafePassMachine machine = createMachineWithDependencies(
-                seatPass,
-                Optional.empty(),  // 라커 없음
-                ioHandler
-        );
+        StudyCafePassMachine machine = createMachineWithoutLocker(seatPass, new StudyCafeIOHandler());
 
-        // when & then
+        // when: 주문 실행
+        // then: 예외 없이 주문 요약이 출력됨
         assertThatCode(machine::run).doesNotThrowAnyException();
     }
 
     @Test
-    @DisplayName("라커가 포함된 주문이 생성되는 경우 showPassOrderSummary가 호출되어야 한다")
+    @DisplayName("고정석 이용권에 사물함을 포함한 주문이 정상 처리된다")
     void shouldCallShowPassOrderSummaryWithLocker() {
-        // given
+        // given: 고정석 이용권과 사물함 이용권을 선택함
         StudyCafeSeatPass seatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 2000, 0.2);
         StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(StudyCafePassType.FIXED, 30, 2000);
-        StudyCafeIOHandler ioHandler = new StudyCafeIOHandler();
-        StudyCafePassMachine machine = createMachineWithDependencies(
-                seatPass,
-                Optional.of(lockerPass),  // 라커 포함
-                ioHandler
-        );
+        StudyCafePassMachine machine = createMachineWithLocker(seatPass, lockerPass, new StudyCafeIOHandler());
 
-        // when & then
+        // when: 주문 실행
+        // then: 예외 없이 주문 요약이 정상 출력됨
         assertThatCode(machine::run).doesNotThrowAnyException();
-    }
-
-    private StudyCafePassMachine createMachineWithDependencies(
-            StudyCafeSeatPass seatPass,
-            Optional<StudyCafeLockerPass> optionalLockerPass,
-            StudyCafeIOHandler ioHandler
-    ) {
-        SeatPassProvider seatPassProvider = () -> StudyCafeSeatPasses.of(List.of(seatPass));
-        LockerPassProvider lockerPassProvider = () -> optionalLockerPass
-                .map(locker -> StudyCafeLockerPasses.of(List.of(locker)))
-                .orElse(StudyCafeLockerPasses.of(List.of()));
-
-        return new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
     }
 
     @Test
@@ -95,10 +73,10 @@ class StudyCafePassMachineTest {
     }
 
     @Test
-    @DisplayName("고정석 이용권을 선택한 경우 사물함을 사용할 수 있다")
+    @DisplayName("고정석 이용권 선택 시 사물함 이용이 가능하다")
     void shouldReturnLockerPassWhenSelectedForFixedSeatPass() throws Exception {
-        // Given: 사용자 입력을 "1"로 모의 (락커 사용 선택)
-        String simulatedInput = "1\n";
+        // given: 사용자 입력을 통해 고정석 이용권과 사물함을 선택함
+        String simulatedInput = "1\n";  // 1: 사물함 사용 선택
         setSystemInput(simulatedInput);
 
         StudyCafeSeatPass fixedSeatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 50000, 0.2);
@@ -107,175 +85,204 @@ class StudyCafePassMachineTest {
                 List.of(StudyCafeLockerPass.of(StudyCafePassType.FIXED, 30, 10000))
         );
         SeatPassProvider seatPassProvider = () -> StudyCafeSeatPasses.of(List.of(fixedSeatPass));
+
         StudyCafePassMachine passMachine = new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
 
-        // 리플렉션으로 private 메서드 접근
-        Method selectLockerPassMethod = StudyCafePassMachine.class.getDeclaredMethod("selectLockerPass", StudyCafeSeatPass.class);
+        // when: private 메서드 selectLockerPass 호출 (Reflection 사용)
+        Method selectLockerPassMethod = StudyCafePassMachine.class.getDeclaredMethod(
+                "selectLockerPass", StudyCafeSeatPass.class
+        );
         selectLockerPassMethod.setAccessible(true);
 
-        // When: selectLockerPass 메서드 호출
-        Optional<StudyCafeLockerPass> result =
-                (Optional<StudyCafeLockerPass>) selectLockerPassMethod.invoke(passMachine, fixedSeatPass);
+        // Optional<StudyCafeLockerPass>로 안전하게 캐스팅
+        Object result = selectLockerPassMethod.invoke(passMachine, fixedSeatPass);
+        Optional<StudyCafeLockerPass> lockerPass = castToOptional(result);
 
-        // Then: 사물함 이용권이 선택되었음을 확인
-        assertThat(result).isPresent();
-        assertThat(result.get().getPassType()).isEqualTo(StudyCafePassType.FIXED);
+        // then: 사물함 이용권이 선택되었는지 확인
+        assertThat(lockerPass).isPresent();
+        assertThat(lockerPass.get().getPassType()).isEqualTo(StudyCafePassType.FIXED);
     }
 
     @Test
-    @DisplayName("고정석이 아닌 이용권을 선택하면 사물함을 이용할 수 없다")
+    @DisplayName("자유석 이용권 선택 시 사물함 이용이 불가능하다")
     void shouldReturnEmptyWhenLockerNotAvailableForSeatPass() throws Exception {
-        // Given: 자유석 이용권 선택
+        // given: 자유석 이용권을 선택함
         StudyCafeSeatPass hourlyPass = StudyCafeSeatPass.of(StudyCafePassType.HOURLY, 5, 10000, 0.1);
 
-        LockerPassProvider lockerPassProvider = () -> StudyCafeLockerPasses.of(List.of());
+        LockerPassProvider lockerPassProvider = () -> StudyCafeLockerPasses.of(List.of());  // 사물함 없음
         SeatPassProvider seatPassProvider = () -> StudyCafeSeatPasses.of(List.of(hourlyPass));
+
         StudyCafePassMachine passMachine = new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
 
-        // 리플렉션으로 private 메서드 접근
-        Method selectLockerPassMethod = StudyCafePassMachine.class.getDeclaredMethod("selectLockerPass", StudyCafeSeatPass.class);
+        // when: private 메서드 selectLockerPass 호출 (Reflection 사용)
+        Method selectLockerPassMethod = StudyCafePassMachine.class.getDeclaredMethod(
+                "selectLockerPass", StudyCafeSeatPass.class
+        );
         selectLockerPassMethod.setAccessible(true);
 
-        // When: selectLockerPass 메서드 호출
-        Optional<StudyCafeLockerPass> result =
-                (Optional<StudyCafeLockerPass>) selectLockerPassMethod.invoke(passMachine, hourlyPass);
+        // 안전한 타입 캐스팅을 통해 Optional<StudyCafeLockerPass>로 변환
+        Optional<StudyCafeLockerPass> result = castToOptional(
+                selectLockerPassMethod.invoke(passMachine, hourlyPass)
+        );
 
-        // Then: 빈 Optional이 반환되어야 함
+        // then: 빈 Optional이 반환됨
         assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("고정석 이용권을 선택하고 사물함을 선택한 경우 사물함 이용권이 반환된다")
+    @DisplayName("고정석 이용권 선택 후 사물함 사용을 선택하면 사물함 이용권이 반환된다")
     void shouldReturnLockerPassWhenLockerSelectedForFixedSeatPass() throws Exception {
-        setSystemInput("1\n"); // 락커 사용 선택
+        // given: 사용자 입력으로 사물함 사용을 선택함
+        setSystemInput("1\n");  // 1: 사물함 사용 선택
 
         StudyCafeSeatPass fixedSeatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 50000, 0.2);
         StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(StudyCafePassType.FIXED, 30, 10000);
+
+        // 고정석과 사물함 이용권을 포함한 StudyCafePassMachine 생성
         StudyCafePassMachine passMachine = createPassMachine(List.of(fixedSeatPass), List.of(lockerPass));
 
+        // when: 사물함 선택 메서드 호출
         Optional<StudyCafeLockerPass> result = invokeSelectLockerPass(passMachine, fixedSeatPass);
 
+        // then: 사물함 이용권이 반환됨
         assertThat(result).isPresent();
         assertThat(result.get()).isEqualTo(lockerPass);
     }
 
     @Test
-    @DisplayName("고정석 이용권을 선택했지만 사물함을 선택하지 않은 경우 빈 Optional을 반환한다")
+    @DisplayName("고정석 이용권 선택 후 사물함 사용을 선택하지 않으면 빈 Optional을 반환한다")
     void shouldReturnEmptyWhenLockerNotSelectedForFixedSeatPass() throws Exception {
-        setSystemInput("2\n"); // 락커 사용하지 않음
+        // given: 사용자 입력으로 사물함 사용을 선택하지 않음
+        setSystemInput("2\n");  // 2: 사물함 사용 안 함
 
         StudyCafeSeatPass fixedSeatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 50000, 0.2);
         StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(StudyCafePassType.FIXED, 30, 10000);
+
+        // 고정석과 사물함 이용권을 포함한 StudyCafePassMachine 생성
         StudyCafePassMachine passMachine = createPassMachine(List.of(fixedSeatPass), List.of(lockerPass));
 
+        // when: 사물함 선택 메서드 호출
         Optional<StudyCafeLockerPass> result = invokeSelectLockerPass(passMachine, fixedSeatPass);
 
+        // then: 빈 Optional이 반환됨
         assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("사물함을 이용할 수 없는 자유석 이용권을 선택한 경우 빈 Optional을 반환한다")
+    @DisplayName("자유석 이용권은 사물함 사용이 불가능하므로 빈 Optional을 반환한다")
     void shouldReturnEmptyWhenLockerNotAvailableForNonFixedSeatPass() throws Exception {
+        // given: 자유석 이용권을 선택함
         StudyCafeSeatPass hourlyPass = StudyCafeSeatPass.of(StudyCafePassType.HOURLY, 5, 10000, 0.1);
+
+        // 자유석 이용권만 포함한 StudyCafePassMachine 생성 (사물함 없음)
         StudyCafePassMachine passMachine = createPassMachine(List.of(hourlyPass), List.of());
 
+        // when: 사물함 선택 메서드 호출
         Optional<StudyCafeLockerPass> result = invokeSelectLockerPass(passMachine, hourlyPass);
 
+        // then: 빈 Optional이 반환됨
         assertThat(result).isEmpty();
     }
 
-    private StudyCafeSeatPass getStudyCafeSeatPass(SeatPassProvider seatPassProvider) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        LockerPassProvider lockerPassProvider = () -> StudyCafeLockerPasses.of(List.of());
-
-        StudyCafePassMachine passMachine = new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
-
-        // 리플렉션을 통해 private 메서드 selectPass에 접근
-        Method selectPassMethod = StudyCafePassMachine.class.getDeclaredMethod("selectPass");
-        selectPassMethod.setAccessible(true);
-
-        // When: selectPass 메서드 호출
-        return (StudyCafeSeatPass) selectPassMethod.invoke(passMachine);
-    }
-
     @Test
-    @DisplayName("고정석 이용권에 대해 사물함 이용권이 존재하고 선택한 경우 사물함이 반환된다")
+    @DisplayName("고정석 이용권에 사물함 이용권이 존재하고 사용을 선택하면 사물함 이용권이 반환된다")
     void shouldReturnLockerPassWhenPresentAndSelected() throws Exception {
-        setSystemInput("1\n"); // 락커 사용 선택
+        // given: 사용자 입력으로 사물함 사용을 선택함
+        setSystemInput("1\n");  // 1: 사물함 사용 선택
 
         StudyCafeSeatPass fixedSeatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 50000, 0.2);
         StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(StudyCafePassType.FIXED, 30, 10000);
+
+        // 고정석과 사물함 이용권을 포함한 StudyCafePassMachine 생성
         StudyCafePassMachine passMachine = createPassMachine(List.of(fixedSeatPass), List.of(lockerPass));
 
+        // when: 사물함 선택 메서드 호출
         Optional<StudyCafeLockerPass> result = invokeSelectLockerPass(passMachine, fixedSeatPass);
 
+        // then: 사물함 이용권이 반환됨
         assertThat(result).isPresent();
         assertThat(result.get()).isEqualTo(lockerPass);
     }
 
     @Test
-    @DisplayName("고정석 이용권에 대해 사물함이 존재하지만 선택하지 않은 경우 빈 Optional을 반환한다")
-    void shouldReturnEmptyWhenLockerNotSelected() throws Exception {
-        setSystemInput("2\n"); // 락커 미선택
+    @DisplayName("고정석 이용권에 사물함이 있지만 사용하지 않으면 사물함이 제공되지 않는다")
+    void shouldNotReturnLockerPassWhenLockerNotSelected() throws Exception {
+        // given: 사용자 입력으로 사물함 사용을 선택하지 않음
+        setSystemInput("2\n");  // 2: 사물함 사용 안 함
 
         StudyCafeSeatPass fixedSeatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 50000, 0.2);
         StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(StudyCafePassType.FIXED, 30, 10000);
+
+        // 고정석과 사물함 이용권을 포함한 StudyCafePassMachine 생성
         StudyCafePassMachine passMachine = createPassMachine(List.of(fixedSeatPass), List.of(lockerPass));
 
+        // when: 사물함 선택 메서드 호출
         Optional<StudyCafeLockerPass> result = invokeSelectLockerPass(passMachine, fixedSeatPass);
 
+        // then: 사물함이 제공되지 않음
         assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("사물함 이용권이 없는 고정석 이용권을 선택한 경우 빈 Optional을 반환한다")
-    void shouldReturnEmptyWhenNoLockerPassAvailable() throws Exception {
-        setSystemInput("1\n"); // 사용자가 락커 선택을 시도했으나 사물함이 없음
+    @DisplayName("사물함 이용권이 없는 고정석 이용권을 선택하면 사물함이 제공되지 않는다")
+    void shouldNotReturnLockerPassWhenNoLockerPassAvailable() throws Exception {
+        // given: 사용자 입력으로 사물함 사용을 시도하지만 사물함 이용권이 없음
+        setSystemInput("1\n");  // 1: 사물함 사용 시도
 
         StudyCafeSeatPass fixedSeatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 50000, 0.2);
+
+        // 사물함 없이 StudyCafePassMachine 생성
         StudyCafePassMachine passMachine = createPassMachine(List.of(fixedSeatPass), List.of());
 
+        // when: 사물함 선택 메서드 호출
         Optional<StudyCafeLockerPass> result = invokeSelectLockerPass(passMachine, fixedSeatPass);
 
+        // then: 사물함이 제공되지 않음
         assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("사물함 이용이 불가능한 자유석 이용권을 선택한 경우 빈 Optional을 반환한다")
-    void shouldReturnEmptyForNonFixedSeatPass() throws Exception {
+    @DisplayName("자유석 이용권은 사물함을 제공하지 않는다")
+    void shouldNotReturnLockerPassForNonFixedSeatPass() throws Exception {
+        // given: 자유석 이용권을 선택함 (사물함 이용 불가)
         StudyCafeSeatPass hourlyPass = StudyCafeSeatPass.of(StudyCafePassType.HOURLY, 5, 10000, 0.1);
+
+        // 자유석 이용권만 포함된 StudyCafePassMachine 생성
         StudyCafePassMachine passMachine = createPassMachine(List.of(hourlyPass), List.of());
 
+        // when: 사물함 선택 메서드 호출
         Optional<StudyCafeLockerPass> result = invokeSelectLockerPass(passMachine, hourlyPass);
 
+        // then: 사물함이 제공되지 않음
         assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("스터디카페 이용권 선택과 사물함 선택이 정상적으로 수행된다")
+    @DisplayName("스터디카페 이용권과 사물함 선택이 정상 처리된다")
     void shouldRunPassMachineSuccessfully() {
-        // Given: 사용자 입력 모의 설정 (고정석 선택 및 사물함 사용 선택)
-        setSystemInput("3\n1\n");  // 고정석 선택(3), 사물함 사용(1)
+        // given: 사용자 입력으로 고정석과 사물함 사용을 선택함
+        setSystemInput("3\n1\n");  // 3: 고정석 선택, 1: 사물함 사용 선택
 
         StudyCafeSeatPass fixedPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 30, 50000, 0.2);
         StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(StudyCafePassType.FIXED, 30, 10000);
 
-        StudyCafePassMachine passMachine = createPassMachine(
-                List.of(fixedPass), List.of(lockerPass)
-        );
+        // 고정석과 사물함 이용권을 포함한 StudyCafePassMachine 생성
+        StudyCafePassMachine passMachine = createPassMachine(List.of(fixedPass), List.of(lockerPass));
 
-        // When & Then: run 메서드 실행 시 예외가 발생하지 않아야 함
+        // when & then: run 메서드 실행 시 예외가 발생하지 않음
         assertThatCode(passMachine::run).doesNotThrowAnyException();
     }
 
     @Test
-    @DisplayName("잘못된 입력 시 AppException에 대한 메시지를 출력한다")
+    @DisplayName("잘못된 입력이 들어와도 시스템이 정상적으로 처리된다")
     void shouldHandleInvalidInputGracefully() {
-        // Given: 잘못된 사용자 입력 모의 설정
-        setSystemInput("4\n");  // 유효하지 않은 선택
+        // given: 유효하지 않은 사용자 입력을 설정
+        setSystemInput("4\n");  // 4: 잘못된 선택
 
+        // 빈 이용권 목록을 사용해 StudyCafePassMachine 생성
         StudyCafePassMachine passMachine = createPassMachine(List.of(), List.of());
 
-        // When & Then: run 메서드 실행 시 예외가 발생하지 않도록 검증
+        // when & then: run 메서드 실행 시 예외가 발생하지 않음
         assertThatCode(passMachine::run).doesNotThrowAnyException();
     }
 
@@ -302,5 +309,48 @@ class StudyCafePassMachineTest {
 
         // 테스트 완료 후 System.in 복원
         Runtime.getRuntime().addShutdownHook(new Thread(() -> System.setIn(originalIn)));
+    }
+
+    // 사물함이 없는 경우
+    private StudyCafePassMachine createMachineWithoutLocker(StudyCafeSeatPass seatPass, StudyCafeIOHandler ioHandler) {
+        SeatPassProvider seatPassProvider = () -> StudyCafeSeatPasses.of(List.of(seatPass));
+        LockerPassProvider lockerPassProvider = () -> StudyCafeLockerPasses.of(List.of());  // 빈 사물함 리스트
+
+        return new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
+    }
+
+    // 사물함이 있는 경우
+    private StudyCafePassMachine createMachineWithLocker(
+            StudyCafeSeatPass seatPass,
+            StudyCafeLockerPass lockerPass,
+            StudyCafeIOHandler ioHandler
+    ) {
+        SeatPassProvider seatPassProvider = () -> StudyCafeSeatPasses.of(List.of(seatPass));
+        LockerPassProvider lockerPassProvider = () -> StudyCafeLockerPasses.of(List.of(lockerPass));
+
+        return new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
+    }
+
+    private Optional<StudyCafeLockerPass> castToOptional(Object obj) {
+        if (obj instanceof Optional<?>) {
+            Optional<?> optional = (Optional<?>) obj;
+            if (optional.isPresent() && optional.get() instanceof StudyCafeLockerPass) {
+                return optional.map(o -> (StudyCafeLockerPass) o);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private StudyCafeSeatPass getStudyCafeSeatPass(SeatPassProvider seatPassProvider) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        LockerPassProvider lockerPassProvider = () -> StudyCafeLockerPasses.of(List.of());
+
+        StudyCafePassMachine passMachine = new StudyCafePassMachine(seatPassProvider, lockerPassProvider);
+
+        // 리플렉션을 통해 private 메서드 selectPass에 접근
+        Method selectPassMethod = StudyCafePassMachine.class.getDeclaredMethod("selectPass");
+        selectPassMethod.setAccessible(true);
+
+        // When: selectPass 메서드 호출
+        return (StudyCafeSeatPass) selectPassMethod.invoke(passMachine);
     }
 }
