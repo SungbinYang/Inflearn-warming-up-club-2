@@ -5,6 +5,7 @@ import me.sungbin.day12.studycafe.model.pass.StudyCafeSeatPass;
 import me.sungbin.day12.studycafe.model.pass.locker.StudyCafeLockerPasses;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,7 +66,7 @@ class LockerPassFileReaderTest {
         // Given: 잘못된 데이터 모의
         List<String> invalidFileContent = List.of("INVALID_TYPE,30,50000");
 
-        try (var mockedFiles = mockStatic(Files.class)) {
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/locker.csv")))
                     .thenReturn(invalidFileContent);
 
@@ -83,7 +84,7 @@ class LockerPassFileReaderTest {
         // Given: 빈 파일 내용 모의
         List<String> emptyFileContent = List.of();
 
-        try (var mockedFiles = mockStatic(Files.class)) {
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/locker.csv")))
                     .thenReturn(emptyFileContent);
 

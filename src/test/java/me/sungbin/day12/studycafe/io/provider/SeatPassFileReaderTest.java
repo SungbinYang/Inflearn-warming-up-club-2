@@ -4,6 +4,7 @@ import me.sungbin.day12.studycafe.model.pass.StudyCafePassType;
 import me.sungbin.day12.studycafe.model.pass.StudyCafeSeatPasses;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,7 +27,7 @@ class SeatPassFileReaderTest {
                 "FIXED,30,50000,0.2"
         );
 
-        try (var mockedFiles = mockStatic(Files.class)) {
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/pass-list.csv")))
                     .thenReturn(validFileContent);
 
@@ -47,7 +48,7 @@ class SeatPassFileReaderTest {
         // Given: 잘못된 데이터 모의
         List<String> invalidFileContent = List.of("INVALID_TYPE,5,10000,0.1");
 
-        try (var mockedFiles = mockStatic(Files.class)) {
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/pass-list.csv")))
                     .thenReturn(invalidFileContent);
 
@@ -63,7 +64,7 @@ class SeatPassFileReaderTest {
     @DisplayName("이용권 파일이 누락된 경우 예외가 발생한다")
     void shouldThrowExceptionWhenFileNotFound() {
         // Given: 파일 누락 상황 모의
-        try (var mockedFiles = mockStatic(Files.class)) {
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/pass-list.csv")))
                     .thenThrow(new IOException("파일을 찾을 수 없습니다."));
 
@@ -82,7 +83,7 @@ class SeatPassFileReaderTest {
         // Given: 잘못된 형식의 데이터 모의
         List<String> malformedFileContent = List.of("HOURLY,INVALID,10000,0.1");
 
-        try (var mockedFiles = mockStatic(Files.class)) {
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/pass-list.csv")))
                     .thenReturn(malformedFileContent);
 
@@ -100,7 +101,7 @@ class SeatPassFileReaderTest {
         // Given: 빈 파일 데이터 모의
         List<String> emptyFileContent = List.of();
 
-        try (var mockedFiles = mockStatic(Files.class)) {
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/pass-list.csv")))
                     .thenReturn(emptyFileContent);
 
